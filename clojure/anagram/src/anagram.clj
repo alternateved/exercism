@@ -6,10 +6,10 @@
   where every word is an anagram of provided word."
   [word prospect-list]
   (let [lowercased-word (str/lower-case word)
-        freq (frequencies lowercased-word)]
+        sorted-word (sort lowercased-word)]
     (into [] (comp
               (filter #(not (= (str/lower-case %) lowercased-word)))
-              (map #(assoc {} :freq (frequencies (str/lower-case %)) :word %))
-              (filter #(= (:freq %) freq))
+              (map #(assoc {} :sorted (sort (str/lower-case %)) :word %))
+              (filter #(= (:sorted %) sorted-word))
               (map :word))
           prospect-list)))
