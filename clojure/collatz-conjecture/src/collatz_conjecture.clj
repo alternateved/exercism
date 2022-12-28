@@ -1,11 +1,12 @@
 (ns collatz-conjecture)
 
 (defn collatz
+  "Given a num, return the number of steps required to reach 1
+  after transforming it repeatedly."
   [num]
-  (loop [n num
-         step 0]
-    (cond
-      (>= 0 n) (throw (AssertionError. "Provided number is equal or lower than zero."))
-      (= 1 n) step
-      (even? n) (recur (/ n 2) (inc step))
-      (odd? n) (recur (+ (* n 3) 1) (inc step)))))
+  (if (>= 0 num)
+    (throw (AssertionError. "Provided number is equal or lower than zero."))
+    (transduce (comp
+                (take-while #(> % 1))
+                (map (constantly 1)))
+               + 0 (iterate (fn [n] (if (even? n) (/ n 2) (+ (* n 3) 1))) num))))
