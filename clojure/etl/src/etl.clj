@@ -2,7 +2,9 @@
   (:require [clojure.string :as str]))
 
 (defn transform
+  "From each key/value pair extract elements nested in value
+  and construct new map with key/element pair."
   [m]
-  (into {}
-        (mapcat (fn [[k v]]
-                     (map (fn [e] {(str/lower-case e) k}) v)) m)))
+  (into {} (for [[k v] m
+                 e v]
+             [(str/lower-case e) k])))
