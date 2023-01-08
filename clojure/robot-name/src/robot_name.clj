@@ -1,4 +1,5 @@
-(ns robot-name)
+(ns robot-name
+  (:require [clojure.set :as set]))
 
 (def active-robots
   "Global state of active robots."
@@ -15,16 +16,21 @@
           (into (repeatedly 3 #(rand-int 10)))
           (apply str)))
 
-(defn name-taken?
-  "Returns true if name is already present in the set of reserved-names."
-  [n] (contains? @active-robots n))
+(defn possible-names
+  "Given a collection of names return a collection with added unique name."
+  [coll]
+  (let [n (gen-name)]
+    (if (contains? coll n) (recur coll)
+        (conj coll n))))
 
 (defn assign-name
   "Assign unique name to robot."
-  [r] (let [name (gen-name)]
-        (if (name-taken? name) (recur r)
-            (do (swap! active-robots conj name)
-                (reset! r name)))))
+  [r]
+  (loop [[old new] (reset-vals! active-robots (possible-names @active-robots))]
+    (let [diff (set/difference new old)]
+      (if (or (empty? diff) (> (count diff) 1))
+        (recur (reset-vals! active-robots (possible-names @active-robots)))
+        (reset! r (first diff))))))
 
 (defn robot 
   "Create a new robot."
@@ -37,5 +43,5 @@
 
 (defn reset-name 
   "Reset name of provided robot."
-  [r] (do (swap! active-robots disj @r)
-          (assign-name r)))
+  [r] (swap! active-robots disj
+             (first (swap-vals! r (constantly nil)))))
