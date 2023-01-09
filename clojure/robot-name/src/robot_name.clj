@@ -5,9 +5,13 @@
   "Global state of active robots."
   (atom #{}))
 
-(defn rand-letter 
+(def letters
+  "A collection of all capital letters."
+  (mapv char (range (int \A) (inc (int \Z)))))
+
+(defn rand-letter
   "Returns a random capital letter between A and Z."
-  [] (rand-nth (map char (range (int \A) (inc (int \Z))))))
+  [] (rand-nth letters))
 
 (defn gen-name
   "Generate a random name in the format of two uppercase letters
@@ -23,16 +27,24 @@
     (if (contains? coll n) (recur coll)
         (conj coll n))))
 
+(defn obtain-name
+  "Obtain new unique name."
+  [] (loop []
+       (let [old @active-robots, new (possible-names old)]
+         (if (compare-and-set! active-robots old new)
+           (first (set/difference new old))
+           (recur)))))
+
 (defn assign-name
   "Assign unique name to robot."
   [r]
-  (loop [[old new] (reset-vals! active-robots (possible-names @active-robots))]
-    (let [diff (set/difference new old)]
-      (if (or (empty? diff) (> (count diff) 1))
-        (recur (reset-vals! active-robots (possible-names @active-robots)))
-        (reset! r (first diff))))))
+  (let [new-name (obtain-name)
+        [prev curr] (swap-vals! r #(or % new-name))]
+    (when prev
+      (swap! active-robots disj new-name))
+    curr))
 
-(defn robot 
+(defn robot
   "Create a new robot."
   [] (atom nil))
 
@@ -41,7 +53,7 @@
   assign new name if robot is unnamed."
   [r] (or @r (assign-name r)))
 
-(defn reset-name 
+(defn reset-name
   "Reset name of provided robot."
   [r] (swap! active-robots disj
              (first (swap-vals! r (constantly nil)))))
