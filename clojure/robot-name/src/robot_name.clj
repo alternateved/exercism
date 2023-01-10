@@ -20,19 +20,22 @@
           (into (repeatedly 3 #(rand-int 10)))
           (apply str)))
 
-(defn possible-names
-  "Given a collection of names return a collection with added unique name."
-  [coll]
+(defn unused-name
+  "Given a collection of names return an unused name."
+  [names]
   (let [n (gen-name)]
-    (if (contains? coll n) (recur coll)
-        (conj coll n))))
+    (if (contains? names n)
+      (recur names)
+      n)))
 
 (defn obtain-name
   "Obtain new unique name."
   [] (loop []
-       (let [old @active-robots, new (possible-names old)]
+       (let [old @active-robots
+             n (unused-name old)
+             new (conj old n)]
          (if (compare-and-set! active-robots old new)
-           (first (set/difference new old))
+           n
            (recur)))))
 
 (defn assign-name
