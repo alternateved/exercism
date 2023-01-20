@@ -1,19 +1,14 @@
-(ns run-length-encoding
-  (:require [clojure.string :as str]))
+(ns run-length-encoding)
 
 (defn run-length-encode
   "Encodes a string with run-length-encoding."
-  [s] (->> (partition-by identity s)
-           (mapcat (juxt count first))
-           (remove #{1})
-           (str/join)))
-
-(defn decode-single
-  "Decodes a single pair of number and character or character."
-  [[_ n c]] (if-not n c (repeat (Long/parseLong n) c)))
+  [s] (apply str (into [] (comp
+                           (partition-by identity)
+                           (mapcat (juxt count first))
+                           (remove #{1})) s)))
 
 (defn run-length-decode
   "Decodes a run-length-encoded string."
-  [s] (->> (re-seq #"(\d+)?(\w|\s)" s)
-           (mapcat decode-single)
-           (str/join)))
+  [s] (->> (re-seq #"(\d+)?(\D)" s)
+           (mapcat (fn [[_ n c]] (repeat (Long/parseLong (or n "1")) c)))
+           (apply str)))
