@@ -44,8 +44,3 @@ cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
-
-# Nim
-nimcache/
-nimblecache/
-htmldocs/
