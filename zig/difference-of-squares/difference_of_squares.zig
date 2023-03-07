@@ -1,19 +1,17 @@
 pub fn squareOfSum(number: usize) usize {
     var sum: usize = 0;
-    var i: usize = 0;
-    while (i <= number) {
+    var i: usize = 1;
+    while (i <= number) : (i += 1) {
         sum += i;
-        i += 1;
     }
     return sum * sum;
 }
 
 pub fn sumOfSquares(number: usize) usize {
     var squares: usize = 0;
-    var i: usize = 0;
-    while (i <= number) {
+    var i: usize = 1;
+    while (i <= number) : (i += 1) {
         squares += i * i;
-        i += 1;
     }
     return squares;
 }
