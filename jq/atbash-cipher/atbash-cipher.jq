@@ -8,8 +8,8 @@ def intersperse(c;n;i):
   end;
 
 def encode:
-	. as $v
-		| {
+  . as $v
+    | {
       a:"z", b:"y", c:"x", d:"w", e:"v", f:"u", g:"t",
       h:"s", i:"r", j:"q", k:"p", l:"o", m:"n", n:"m",
       o:"l", p:"k", q:"j", r:"i", s:"h", t:"g", u:"f",
@@ -17,8 +17,8 @@ def encode:
     } | .[$v] // $v;
 
 def decode:
-	. as $v
-		| {
+  . as $v
+    | {
       z:"a", y:"b", x:"c", w:"d", v:"e", u:"f", t:"g",
       s:"h", r:"i", q:"j", p:"k", o:"l", n:"m", m:"n",
       l:"o", k:"p", j:"q", i:"r", h:"s", g:"t", f:"u",
@@ -30,9 +30,9 @@ def decode:
 | gsub("[^\\w]"; "")
 | split("")
 | map(ascii_downcase)
-| if $property == "encode" then 
-    map(encode) | intersperse(" ";5;0)      
+| if $property == "encode" then
+    map(encode) | intersperse(" ";5;0)
   else
-	  map(decode)
+    map(decode)
   end
 | add
